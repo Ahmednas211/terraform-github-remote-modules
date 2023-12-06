@@ -4,7 +4,7 @@ resource "aws_eip" "eip_for_nat_gateway_az1" {
   domain    = "vpc" # update: this is the correct code.
 
   tags   = {
-    Name = "${var.project_name}-${environment}-eip1"
+    name = "${var.project_name}-${environment}-eip1"
   }
 }
 
@@ -14,7 +14,7 @@ resource "aws_eip" "eip_for_nat_gateway_az2" {
   domain    = "vpc" # update: this is the correct code.
 
   tags   = {
-    Name = "${var.project_name}-${environment}-eip2"
+    name = "${var.project_name}-${environment}-eip2"
   }
 }
 
