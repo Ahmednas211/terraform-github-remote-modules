@@ -4,7 +4,7 @@ resource "aws_eip" "eip_for_nat_gateway_az1" {
   domain    = "vpc" # update: this is the correct code.
 
   tags   = {
-    Name = "NAT Public Subnet AZ 1 EIP"
+    Name = "${var.project_name}-${var.environment}-eip1"
   }
 }
 
@@ -14,7 +14,7 @@ resource "aws_eip" "eip_for_nat_gateway_az2" {
   domain    = "vpc" # update: this is the correct code.
 
   tags   = {
-    Name = "NAT Public Subnet AZ 2 EIP"
+    Name = "${var.project_name}-${var.environment}-eip2"
   }
 }
 
@@ -38,7 +38,7 @@ resource "aws_nat_gateway" "nat_gateway_az2" {
   subnet_id     = var.public_subnet_az2_id
 
   tags = {
-    Name = "${var.project_name}-${environment}-ng-az2"
+    Name = "${var.project_name}-${var.environment}-ng-az2"
   }
 
   # to ensure proper ordering, it is recommended to add an explicit dependency
@@ -56,7 +56,7 @@ resource "aws_route_table" "private_route_table_az1" {
   }
 
   tags = {
-    Name = "${var.project_name}-${environment}-private-rt-az1"
+    Name = "${var.project_name}-${var.environment}-private-rt-az1"
   }
 }
 
@@ -82,7 +82,7 @@ resource "aws_route_table" "private_route_table_az2" {
   }
 
   tags = {
-    Name = "${var.project_name}-${environment}-private-rt-az2"
+    Name = "${var.project_name}-${var.environment}-private-rt-az2"
   }
 }
 
