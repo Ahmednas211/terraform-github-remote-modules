@@ -24,7 +24,7 @@ resource "aws_nat_gateway" "nat_gateway_az1" {
   subnet_id     = var.public_subnet_az1_id
 
   tags = {
-    Name = "${var.project_name}-${environment}-ng-az1"
+    Name = "${var.project_name}-${var.environment}-ng-az1"
   }
 
   # to ensure proper ordering, it is recommended to add an explicit dependency
