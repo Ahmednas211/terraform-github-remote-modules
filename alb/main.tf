@@ -1,6 +1,6 @@
 # create application load balancer
 resource "aws_lb" "application_load_balancer" {
-  name                       = "${var.project_name}-${var.environment}-alb"
+  name                       = "${var.project_name}-${var.environment}"
   internal                   = false
   load_balancer_type         = "application"
   security_groups            = [var.alb_security_group_id]
@@ -14,7 +14,7 @@ resource "aws_lb" "application_load_balancer" {
 
 # create target group
 resource "aws_lb_target_group" "alb_target_group" {
-  name        = "${var.project_name}-${var.environment}-tg"
+  name        = "${var.project_name}-${var.environment}"
   target_type = var.target_type
   port        = 80
   protocol    = "HTTP"
