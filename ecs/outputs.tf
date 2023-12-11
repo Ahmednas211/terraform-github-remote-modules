@@ -1,4 +1,4 @@
 # export the ecs service
 output "ecs_service" {
-  value = 
+  value = aws_ecs_service.ecs_service
 }
