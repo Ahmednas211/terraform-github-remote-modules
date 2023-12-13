@@ -31,7 +31,7 @@ data "aws_iam_policy_document" "ecs_task_execution_policy_document" {
     ]
 
     resources = [
-      "arn:aws:s3:::${var.project_name}-${var.env_file_bucket_name}/*"  # This is the ARN of the s3 bucket, because we want the ECS service to the get any object from this s3 bucket
+      "arn:aws:s3:::${var.project_name}-${var.env_file_bucket_name}/${var.env_file_name}"  # This is the ARN of the s3 bucket, because we want the ECS service to the get any object from this s3 bucket
     ]
   }
 

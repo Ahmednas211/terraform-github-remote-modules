@@ -6,4 +6,4 @@ output "env_file_bucket_name" {
 # export the environment file name
 output "env_file_name" {
   value = "env_file_name"
-}
+}  
