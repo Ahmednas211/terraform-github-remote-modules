@@ -20,7 +20,7 @@ data "aws_db_snapshot" "latest_db_snapshot" {
 resource "aws_db_instance" "database_instance" {
   instance_class         = var.db_instance_class
   skip_final_snapshot    = true
-  availability_zone      = var.availability_zone_1 #gotten directly from our vpc modole outputs
+  availability_zone      = var.availability_zone_1 #gotten directly from our vpc module outputs
   identifier             = var.db_instance_identifier
   snapshot_identifier    = data.aws_db_snapshot.latest_db_snapshot.id
   db_subnet_group_name   = aws_db_subnet_group.database_subnet_group.id
