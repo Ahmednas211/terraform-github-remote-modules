@@ -10,28 +10,28 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
-# IAM Policy Document for ECR Operations
-data "aws_iam_policy_document" "ecr_policy_document" {
-  statement {
-    actions   = [
-      "ecr:GetAuthorizationToken",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:GetRepositoryPolicy",
-      "ecr:DescribeRepositories",
-      "ecr:ListImages",
-      "ecr:DescribeImages",
-      "ecr:BatchGetImage",
-      "ecr:GetLifecyclePolicy",
-      "ecr:GetLifecyclePolicyPreview",
-      "ecr:ListTagsForResource",
-      "ecr:DescribeImageScanFindings",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-    ]
-    resources = ["*"]
-  }
-}
+# # IAM Policy Document for ECR Operations
+# data "aws_iam_policy_document" "ecr_policy_document" {
+#   statement {
+#     actions   = [
+#       "ecr:GetAuthorizationToken",
+#       "ecr:BatchCheckLayerAvailability",
+#       "ecr:GetDownloadUrlForLayer",
+#       "ecr:GetRepositoryPolicy",
+#       "ecr:DescribeRepositories",
+#       "ecr:ListImages",
+#       "ecr:DescribeImages",
+#       "ecr:BatchGetImage",
+#       "ecr:GetLifecyclePolicy",
+#       "ecr:GetLifecyclePolicyPreview",
+#       "ecr:ListTagsForResource",
+#       "ecr:DescribeImageScanFindings",
+#       "logs:CreateLogStream",
+#       "logs:PutLogEvents",
+#     ]
+#     resources = ["*"]
+#   }
+# }
 
 # IAM Policy Document for ECS Task Execution
 data "aws_iam_policy_document" "ecs_task_execution_policy_document" {
@@ -59,11 +59,11 @@ data "aws_iam_policy_document" "ecs_task_execution_policy_document" {
   }
 }
 
-# IAM Policy for ECR Operations
-resource "aws_iam_policy" "ecr_policy" {
-  name   = "${var.project_name}-${var.environment}-ecr-policy"
-  policy = data.aws_iam_policy_document.ecr_policy_document.json
-}
+# # IAM Policy for ECR Operations
+# resource "aws_iam_policy" "ecr_policy" {
+#   name   = "${var.project_name}-${var.environment}-ecr-policy"
+#   policy = data.aws_iam_policy_document.ecr_policy_document.json
+# }
 
 # IAM Policy for ECS Task Execution
 resource "aws_iam_policy" "ecs_task_execution_policy" {
@@ -71,10 +71,10 @@ resource "aws_iam_policy" "ecs_task_execution_policy" {
   policy = data.aws_iam_policy_document.ecs_task_execution_policy_document.json
 }
 
-# IAM Role for ECS Task Execution
+# Create IAM Role for ECS Task Execution
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = "${var.project_name}-${var.environment}-ecs-task-execution-role"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+  assume_role_policy ="arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 # Attach ECS Task Execution Policy to the IAM Role
@@ -83,8 +83,8 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
   policy_arn = aws_iam_policy.ecs_task_execution_policy.arn
 }
 
-# Attach ECR Policy to the IAM Role
-resource "aws_iam_role_policy_attachment" "ecr_policy_attachment" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = aws_iam_policy.ecr_policy.arn
-}
+# # Attach ECR Policy to the IAM Role
+# resource "aws_iam_role_policy_attachment" "ecr_policy_attachment" {
+#   role       = aws_iam_role.ecs_task_execution_role.name
+#   policy_arn = aws_iam_policy.ecr_policy.arn
+# }
