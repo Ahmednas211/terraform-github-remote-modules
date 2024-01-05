@@ -1,4 +1,4 @@
-# create iam policy document. this policy allows the ecs service to assume a role
+# IAM Policy Document for assuming a role
 data "aws_iam_policy_document" "assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -10,7 +10,30 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
-# create iam policy document
+# IAM Policy Document for ECR Operations
+data "aws_iam_policy_document" "ecr_policy_document" {
+  statement {
+    actions   = [
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:GetRepositoryPolicy",
+      "ecr:DescribeRepositories",
+      "ecr:ListImages",
+      "ecr:DescribeImages",
+      "ecr:BatchGetImage",
+      "ecr:GetLifecyclePolicy",
+      "ecr:GetLifecyclePolicyPreview",
+      "ecr:ListTagsForResource",
+      "ecr:DescribeImageScanFindings",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+    resources = ["*"]
+  }
+}
+
+# IAM Policy Document for ECS Task Execution
 data "aws_iam_policy_document" "ecs_task_execution_policy_document" {
   statement {
     actions = [
@@ -19,69 +42,49 @@ data "aws_iam_policy_document" "ecs_task_execution_policy_document" {
       "ecr:GetDownloadUrlForLayer",
       "ecr:BatchGetImage",
       "logs:CreateLogStream",
-      "logs:PutLogEvents"
+      "logs:PutLogEvents",
     ]
-
     resources = ["*"]
   }
 
-  # Statement for Amazon EC2 Container Registry read-only permissions
-statement {
-  actions = [
-    "ecr:GetAuthorizationToken",
-    "ecr:BatchCheckLayerAvailability",
-    "ecr:GetDownloadUrlForLayer",
-    "ecr:GetRepositoryPolicy",
-    "ecr:DescribeRepositories",
-    "ecr:ListImages",
-    "ecr:DescribeImages",
-    "ecr:BatchGetImage",
-    "ecr:GetLifecyclePolicy",
-    "ecr:GetLifecyclePolicyPreview",
-    "ecr:ListTagsForResource",
-    "ecr:DescribeImageScanFindings",
-    "logs:CreateLogStream",
-    "logs:PutLogEvents"
-  ]
-  resources = ["*"]
+  # create an inline policy to access s3 object and get bucket location
+  statement {
+    actions = ["s3:GetObject"]
+    resources = ["arn:aws:s3:::${var.project_name}-${var.env_file_bucket_name}/*"]
+  }
+
+  statement {
+    actions = ["s3:GetBucketLocation"]
+    resources = ["arn:aws:s3:::${var.project_name}-${var.env_file_bucket_name}"]
+  }
 }
 
-# create an inline policy to access s3 object and get bucket location
-  statement {
-    actions = [
-      "s3:GetObject"
-    ]
+# IAM Policy for ECR Operations
+resource "aws_iam_policy" "ecr_policy" {
+  name   = "${var.project_name}-${var.environment}-ecr-policy"
+  policy = data.aws_iam_policy_document.ecr_policy_document.json
+}
 
-    resources = [
-      "arn:aws:s3:::${var.project_name}-${var.env_file_bucket_name}/*"  # This is the ARN of the s3 bucket, because we want the ECS service to the get any object from this s3 bucket
-    ]
-  }
-  
-  statement {
-    actions = [
-      "s3:GetBucketLocation"  # we want the ECS service the get the s3 location.
-    ]
-
-    resources = [
-      "arn:aws:s3:::${var.project_name}-${var.env_file_bucket_name}"  # Here, we want the ARN of the s3 bucket -- just like what we did in line 34
-    ]
-  }
-} 
-
-# create iam policy
+# IAM Policy for ECS Task Execution
 resource "aws_iam_policy" "ecs_task_execution_policy" {
-  name   = "${var.project_name}-${var.environment}-ecs-task-execution-role-policy" # the variable here is our typical project name and environmnet information
+  name   = "${var.project_name}-${var.environment}-ecs-task-execution-policy"
   policy = data.aws_iam_policy_document.ecs_task_execution_policy_document.json
 }
 
-# create an iam role
+# IAM Role for ECS Task Execution
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = "${var.project_name}-${var.environment}-ecs-task-execution-role"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
-# attach ecs task execution policy to the iam role
+# Attach ECS Task Execution Policy to the IAM Role
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = aws_iam_policy.ecs_task_execution_policy.arn
+}
+
+# Attach ECR Policy to the IAM Role
+resource "aws_iam_role_policy_attachment" "ecr_policy_attachment" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = aws_iam_policy.ecr_policy.arn
 }
