@@ -71,10 +71,10 @@ resource "aws_iam_policy" "ecs_task_execution_policy" {
   policy = data.aws_iam_policy_document.ecs_task_execution_policy_document.json
 }
 
-# Create IAM Role for ECS Task Execution
+# IAM Role for ECS Task Execution
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = "${var.project_name}-${var.environment}-ecs-task-execution-role"
-  assume_role_policy ="arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 # Attach ECS Task Execution Policy to the IAM Role
